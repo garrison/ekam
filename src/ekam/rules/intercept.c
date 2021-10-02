@@ -542,13 +542,12 @@ static const char* remap_file(const char* syscall_name, const char* pathname,
       pathname = pathname + strlen(current_dir);
     } else if (pathname[0] == '/' ||
                strncmp(pathname, "deps/", 5) == 0) {
-      /* Absolute path or under `deps`.  Note the access but don't remap. */
+      /* Absolute path or under `deps`.  Note the access. */
       if (usage == WRITE) {
-        /* Cannot write to absolute paths. */
+        /* Allow write so ccache works. */
         funlockfile(ekam_call_stream);
-        errno = EACCES;
-        if (debug) fprintf(stderr, "  absolute path, can't write\n");
-        return NULL;
+        fprintf(stderr, "  writing absolute path: %s\n", pathname);
+        return pathname;
       }
 
       fputs("noteInput ", ekam_call_stream);
